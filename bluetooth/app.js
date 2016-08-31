@@ -2,6 +2,7 @@ var BTSP = require('bluetooth-serial-port');
 var serial = new BTSP.BluetoothSerialPort();
 
 let buffer = '';
+let stdin = process.openStdin();
 
 serial.on('found', (address, name) => {
 
@@ -26,9 +27,13 @@ serial.on('found', (address, name) => {
 
             });
 
-            serial.write(new Buffer('Can you see this? Huh?'), (err, bytesWritten) => {
-               if (err) console.log(`Error occurred!!!\n ${err}\nwrited bytes : ${bytesWritten}`);
-            });
+
+            stdin.addListener("data", data => {
+              serial.write(new Buffer(data), (err, bytesWritten) => {
+                if (err) console.log(`Error occurred!!!\n ${err}\nwrited bytes : ${bytesWritten}`);
+              });
+            })
+
 
         },  (err) => {
             console.error(err);
